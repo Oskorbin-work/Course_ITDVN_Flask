@@ -28,6 +28,18 @@ def home():
         is_all_completed=is_all_completed,
     )
 
+@app.route("/about")
+def about():
+    return render_template(
+        "about.html"
+    )
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template(
+        "404.html"
+    ), 404
+
 
 @app.route("/add", methods=["POST"])
 def create_todo():
