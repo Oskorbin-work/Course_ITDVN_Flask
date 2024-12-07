@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>СПИСОК ЗАДАЧ</title>
+  </head>
+  <body>
+    <h1 class="page_title">Мої задачі</h1>
+
+    <form action="/add" method="post" class="new_todo_form">
+      <div>
+        <label for="todo_input" class="todo_input__label">Назва</label>
+        <input
+          id="todo_input"
+          type="text"
+          name="title"
+          placeholder="Введіть назву задачі..."
+          class="todo_input"
+        />
+        <br />
+        <button type="submit" class="add_todo_btn">Додати</button>
+      </div>
+    </form>
+
+    <hr />
+
+    <section class="todo_section">
+      {% for message in get_flashed_messages() %}
+      <div class="error_message">{{ message }}</div>
+
+      <hr />
+
+      {% endfor %} {% if is_all_completed %}
+      <p class="info_message">Ура, ви виконали всі задачі!</p>
+
+      <hr />
+
+      {% endif %} {% for todo in todo_list %}
+      <div class="todo">
+        <div class="todo_info">
+          <p class="todo_title">{{todo.id }} | {{ todo.title }}</p>
+
+          {% if todo.completed == False %}
+          <span class="todo_badge todo_not_completed">Не виконано :(</span>
+          {% else %}
+          <span class="todo_badge todo_completed">Виконано :)</span>
+          {% endif %}
+        </div>
+
+        <div>
+          <a href="/update/{{ todo.id }}" class="link update_link">Оновити</a>
+          <a href="/delete/{{ todo.id }}" class="link delete_link">Видалити</a>
+        </div>
+      </div>
+
+      {% endfor %}
+    </section>
+  </body>
+</html>
