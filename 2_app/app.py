@@ -73,15 +73,44 @@ def get_expenses():
 
 @app.route("/expenses/<int:id>",methods=["GET"])
 def get_expense(id):
-    pass
+    expense = db.get_or_404(Expense, id)
+    return jsonify(
+        {
+                "id": expense.id,
+                "title": expense.title,
+                "amount": expense.amount,
+        }
+    ), 200
 
-@app.route("/expenses/<int:id>",methods=["PUT"])
+
+@app.route("/expenses/<int:id>",methods=["PATCH"])
 def update_expense(id):
-    pass
+    expense = db.get_or_404(Expense, id)
+    data = request.json
+    expense.title = data.get("title",expense.title)
+    expense.amount = data.get("amount", expense.amount)
+
+    db.session.commit()
+
+    return jsonify(
+        {
+                "id": expense.id,
+                "title": expense.title,
+                "amount": expense.amount,
+        }
+    )
+
 
 @app.route("/expenses/<int:id>",methods=["DELETE"])
 def delete_expense(id):
-    pass
+    expense = db.get_or_404(Expense, id)
+    Expense.query.filter_by(id=id).delete()
+    db.session.commit()
+    return "", 204
+
+@app.errorhandler(404)
+def handle_404(e):
+    return jsonify(error="Ми не змогли знайти це :("), 404
 
 if __name__ == "__main__":
     with app.app_context():
