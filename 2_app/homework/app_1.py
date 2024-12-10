@@ -1,4 +1,10 @@
+"""
+Написати маленький сервіс, використовуючи REST, який буде повертати JSON вигляду {‘message’:
+‘Hello World!’}.
+"""
+
 from flask import Flask, jsonify
+
 
 app = Flask(__name__)
 

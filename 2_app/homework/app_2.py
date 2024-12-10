@@ -1,3 +1,7 @@
+"""
+Написати маленький сервіс, використовуючи GraphQL, який буде повертати JSON вигляду
+{‘message’: ‘Hello World!’}.
+"""
 from flask import Flask, jsonify, request
 import graphene
 import json
