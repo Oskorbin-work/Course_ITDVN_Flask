@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from marshmallow import ValidationError
 
 from app.db import Expense, db
 from app.schemas import expense_schema, expenses_schema
@@ -27,17 +28,15 @@ def create_expense():
                 schema:
                     $ref: '#/definitions/ExpenseIn'
         """
-    data = request.json
-    new_expense = Expense(title=data['title'], amount=data["amount"])
+    json_data = request.json
+    try:
+        data = expense_schema.load(json_data)
+    except ValidationError as err:
+        return err.messages, 422
+    new_expense = Expense(title=data["title"], amount=data["amount"])
     db.session.add(new_expense)
     db.session.commit()
-    return jsonify(
-        {
-            "id": new_expense.id,
-            "title": new_expense.title,
-            "amount": new_expense.amount,
-        }
-    ), 201
+    return jsonify(expense_schema.dump(new_expense)), 201
 
 @bp.route("/test_expenses",methods=["GET"])
 def create_test_expense():
@@ -98,13 +97,7 @@ def get_expense(id):
                     $ref: '#/definitions/NotFound'
         """
     expense = db.get_or_404(Expense, id)
-    return jsonify(
-        {
-                "id": expense.id,
-                "title": expense.title,
-                "amount": expense.amount,
-        }
-    ), 200
+    return jsonify(expense_schema.dump(expense)), 200
 
 
 @bp.route("/<int:id>",methods=["PATCH"])
@@ -139,19 +132,15 @@ def update_expense(id):
                     $ref: '#/definitions/NotFound'
         """
     expense = db.get_or_404(Expense, id)
-    data = request.json
-    expense.title = data.get("title",expense.title)
+    json_data = request.json
+    try:
+        data = expense_schema.load(json_data, partial=True)
+    except ValidationError as err:
+        return err.messages, 422
+    expense.title = data.get("title", expense.title)
     expense.amount = data.get("amount", expense.amount)
-
     db.session.commit()
-
-    return jsonify(
-        {
-                "id": expense.id,
-                "title": expense.title,
-                "amount": expense.amount,
-        }
-    )
+    return jsonify(expense_schema.dump(expense)), 200
 
 
 @bp.route("/<int:id>",methods=["DELETE"])
