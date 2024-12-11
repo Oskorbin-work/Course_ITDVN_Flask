@@ -1,10 +1,11 @@
 from flask import Blueprint, jsonify, request
 
 from app.db import Expense, db
+from app.schemas import expense_schema, expenses_schema
 
 bp = Blueprint("expense", __name__, url_prefix="/expenses")
 
-@bp.route("/expenses",methods=["POST"])
+@bp.route("/",methods=["POST"])
 def create_expense():
     """
         Створює нову витрату
@@ -51,7 +52,7 @@ def create_test_expense():
         }
     ), 201
 
-@bp.route("/expenses",methods=["GET"])
+@bp.route("/",methods=["GET"])
 def get_expenses():
     """
     Повертає список усіх витрат
@@ -69,16 +70,9 @@ def get_expenses():
                     $ref: '#/definitions/ExpenseOut'
     """
     expenses = Expense.query.all()
-    print(expenses)
-    return jsonify(
-        [{
-                "id": expense.id,
-                "title": expense.title,
-                "amount": expense.amount,
-        } for expense in expenses]
-    ), 200
+    return jsonify(expenses_schema.dump(expenses)), 200
 
-@bp.route("/expenses/<int:id>",methods=["GET"])
+@bp.route("/<int:id>",methods=["GET"])
 def get_expense(id):
     """
         Повертає одну витрату за ідентифікатором
@@ -113,7 +107,7 @@ def get_expense(id):
     ), 200
 
 
-@bp.route("/expenses/<int:id>",methods=["PATCH"])
+@bp.route("/<int:id>",methods=["PATCH"])
 def update_expense(id):
     """
         Оновлює дані витрати за ідентифікатором
@@ -160,7 +154,7 @@ def update_expense(id):
     )
 
 
-@bp.route("/expenses/<int:id>",methods=["DELETE"])
+@bp.route("/<int:id>",methods=["DELETE"])
 def delete_expense(id):
     """
         Видаляє витрату за ідентифікатором

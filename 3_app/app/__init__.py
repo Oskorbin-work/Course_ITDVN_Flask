@@ -7,8 +7,8 @@ def test():
     return basedir
 
 def create_app():
-    app = Flask(__name__, instance_relative_config=True, instance_path=f"{test()}/instance")
-    app.config.from_mapping(SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///3_app\expenses.sqlite3")
+    app = Flask(__name__, instance_relative_config=True, instance_path=f"{test()}/../instance")
+    app.config.from_mapping(SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///expenses.sqlite3")
 
     @app.route("/")
     def home():
@@ -47,6 +47,6 @@ def create_app():
 
     @app.errorhandler(404)
     def handle_404(e):
-        return jsonify(error="Ми не змогли знайти це :("), 404
+        return str(e), 404
 
     return app
