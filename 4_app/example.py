@@ -42,7 +42,6 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Створення об'єктів
 department_dev = Department(name="DEV")
 department_qa = Department(name="QA")
 user1 = User(name="John", department=department_dev)
@@ -50,3 +49,39 @@ user2 = User(name="Alice", department=department_dev)
 user3 = User(name="Bob", department=department_qa)
 user4 = User(name="Mary", department=department_qa)
 
+session.add_all([department_dev, department_qa, user1, user2, user3, user4])
+session.commit()
+
+"""
+departments = session.query(Department).all()
+for dep in departments:
+    print(f"\tDepartment: {dep.name}")
+    for user in dep.users:
+        print(f"\t\tUser (lazy loaded): {user.name}")
+"""
+
+"""
+departments_with_user_count = (
+    session.query(Department.name, func.count(User.id))
+    .outerjoin(User)
+    .group_by(Department.id)
+    .all()
+)
+print("Departments with user count:")
+for dep in departments_with_user_count:
+    print(f"\tDepartment: {dep[0]}, User count: {dep[1]}")
+"""
+
+user = session.query(User).filter_by(name="John").first()
+if user:
+    user.department.name = "HR"
+    session.commit()
+
+departments = session.query(Department).options(selectinload(Department.users)).all()
+for dep in departments:
+    print(f"\tDepartment: {dep.name}")
+    for user in dep.users:
+        print(f"\t\tUser (eager loaded): {user.name}")
+
+session.query(User).delete()
+session.commit()
