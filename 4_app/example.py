@@ -6,7 +6,6 @@ class Base(DeclarativeBase):
     pass
 
 
-# Клас для таблиці "Користувачі"
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -14,8 +13,6 @@ class User(Base):
     department_id = Column(Integer, ForeignKey("departments.id"))
     department = relationship("Department", back_populates="users")
 
-
-# Клас для таблиці "Департаменти"
 class Department(Base):
     __tablename__ = "departments"
     id = Column(Integer, primary_key=True)
