@@ -35,10 +35,10 @@ def create_app():
         return jsonify(build_swagger(app))
 
     from app.db import db
+    from app.migrate import migrate
 
     db.init_app(app)
-    with app.app_context():
-        db.create_all()
+    migrate.init_app(app, db, render_as_batch=True)
 
     from app import expense
 
