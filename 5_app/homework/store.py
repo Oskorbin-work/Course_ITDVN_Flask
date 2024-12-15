@@ -2,8 +2,12 @@
 домашньої роботи попереднього уроку, створити файл міграції, провести міграцію за допомогою
 flask-migrate."""
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, func, and_
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, func, and_,DateTime
 from sqlalchemy.orm import sessionmaker, relationship, selectinload, DeclarativeBase
+
+def print_name_user_check_number(user,card):
+    print(f"Клиент: {user.name}")
+    print(f"Номер чека: {card.id}")
 
 
 class Base(DeclarativeBase):
@@ -11,12 +15,17 @@ class Base(DeclarativeBase):
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__: str = "users"
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
     carts = relationship("Cart", back_populates="user")
-    #carts = relationship("Cart", secondary = "user_carts", back_populates="users")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # softly delete
+    deleted_at = Column(DateTime, default=None, nullable=True)
+
 
 
 class Product(Base):
@@ -26,11 +35,26 @@ class Product(Base):
     price = Column(Integer)
     carts = relationship("Cart",secondary ="products_carts", back_populates="products")
 
+    category_id = Column(Integer, ForeignKey("categories.id"))
+    category = relationship("Category", back_populates="products")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # softly delete
+    deleted_at = Column(DateTime, default=None, nullable=True)
+
 class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True)
     name = (String)
     description = (String)
+
+    products = relationship("Product", back_populates="category")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # softly delete
+    deleted_at = Column(DateTime, default=None, nullable=True)
 
 class Cart(Base):
     __tablename__ = "carts"
@@ -38,6 +62,11 @@ class Cart(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("User", back_populates="carts")
     products = relationship("Product",secondary ="products_carts", back_populates="carts")
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # softly delete
+    deleted_at = Column(DateTime, default=None, nullable=True)
 
     @property
     def total_price(self):
@@ -48,6 +77,11 @@ class ProductCart(Base):
     product_id = Column(Integer, ForeignKey("products.id"), primary_key=True)
     cart_id = Column(Integer, ForeignKey("carts.id"), primary_key=True)
     quantity = Column(Integer,default=1)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), nullable=True)
+    # softly delete
+    deleted_at = Column(DateTime, default=None, nullable=True)
 
 
 engine = create_engine("sqlite:///:memory:", echo=True)
@@ -87,16 +121,14 @@ total_price = 0
 for user, cart, product, quantity in result:
     if first_for:
         print("\n––––––––––------------------")
-        print(f"Клиент: {user.name}")
-        print(f"Номер чека: {cart.id}")
+        print_name_user_check_number(user,cart)
         first_for=False
     if current_id_cart != cart.id:
         current_id_cart = cart.id
         print(f"                         \nСумма: {total_price}")
         total_price = 0
         print("\n––––––––––------------------")
-        print(f"Клиент: {user.name}")
-        print(f"Номер чека: {cart.id}")
+        print_name_user_check_number(user,cart)
     else:
         print(f"  Блюдо: {product.name} (Цена: {product.price}, Количество: {quantity})")
         total_price+=product.price
