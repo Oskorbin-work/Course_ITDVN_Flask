@@ -2,7 +2,7 @@
 домашньої роботи попереднього уроку, створити файл міграції, провести міграцію за допомогою
 flask-migrate."""
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, func, and_,DateTime
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, func,DateTime
 from sqlalchemy.orm import sessionmaker, relationship, selectinload, DeclarativeBase
 
 def print_name_user_check_number(user,card):
