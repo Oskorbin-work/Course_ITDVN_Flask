@@ -27,20 +27,20 @@ def create_app():
         """
         return jsonify(message="Привіт, я твій додаток для контролю витрат!")
 
-    from app.swagger_utils import build_swagger
-    from app.swagger_bp import swagger_ui_blueprint, SWAGGER_API_URL
+    from app_5.app.swagger_utils import build_swagger
+    from app_5.app.swagger_bp import swagger_ui_blueprint, SWAGGER_API_URL
 
     @app.route(SWAGGER_API_URL)
     def spec():
         return jsonify(build_swagger(app))
 
-    from app.db import db
-    from app.migrate import migrate
+    from app_5.app.db import db
+    from app_5.app.migrate import migrate
 
     db.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
 
-    from app import expense
+    from app_5.app import expense
 
     app.register_blueprint(expense.bp)
     app.register_blueprint(swagger_ui_blueprint)

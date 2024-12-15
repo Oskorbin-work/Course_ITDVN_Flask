@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 
-from app.db import Expense, db
-from app.schemas import expense_schema, expenses_schema
+from app_5.app.db import Expense, db
+from app_5.app.schemas import expense_schema, expenses_schema
 
 bp = Blueprint("expense", __name__, url_prefix="/expenses")
 
