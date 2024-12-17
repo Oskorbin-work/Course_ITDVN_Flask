@@ -7,8 +7,9 @@ def test():
     return basedir
 
 def create_app():
-    app = Flask(__name__, instance_relative_config=True, instance_path=f"{test()}/../instance")
-    app.config.from_mapping(JWT_SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///expenses.sqlite3")
+    app = Flask(__name__, instance_relative_config=True)
+    config_type = os.getenv("CONFIG_TYPE", default="app.config.Config")
+    app.config.from_object(config_type)
 
     @app.route("/")
     def home():
