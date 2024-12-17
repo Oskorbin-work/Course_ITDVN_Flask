@@ -8,7 +8,7 @@ def test():
 
 def create_app():
     app = Flask(__name__, instance_relative_config=True, instance_path=f"{test()}/../instance")
-    app.config.from_mapping(SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///expenses.sqlite3")
+    app.config.from_mapping(JWT_SECRET_KEY="dev", SQLALCHEMY_DATABASE_URI="sqlite:///expenses.sqlite3")
 
     @app.route("/")
     def home():
@@ -27,24 +27,26 @@ def create_app():
         """
         return jsonify(message="Привіт, я твій додаток для контролю витрат!")
 
-    from app_6.app.swagger_utils import build_swagger
-    from app_6.app.swagger_bp import swagger_ui_blueprint, SWAGGER_API_URL
+    from app.swagger_utils import build_swagger
+    from app.swagger_bp import swagger_ui_blueprint, SWAGGER_API_URL
 
     @app.route(SWAGGER_API_URL)
     def spec():
         return jsonify(build_swagger(app))
 
-    from app_6.app.db import db
-    from app_6.app.migrate import migrate
-    from app_6.app.jwt import jwt
+    from app.db import db
+    from app.migrate import migrate
+    from app.jwt import jwt
 
     db.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
     jwt.init_app(app)
 
-    from app_6.app import expense
+    from app import expense
+    from app import user
 
     app.register_blueprint(expense.bp)
+    app.register_blueprint(user.bp)
     app.register_blueprint(swagger_ui_blueprint)
 
     @app.errorhandler(404)

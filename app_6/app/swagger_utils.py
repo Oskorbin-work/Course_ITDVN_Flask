@@ -38,6 +38,43 @@ def build_swagger(app):
                 },
             ],
         },
+        "UserIn": {
+            "type": "object",
+            "discriminator": "userInType",
+            "properties": {
+                "username": {"type": "string"},
+                "password": {"type": "string"},
+            },
+            "example": {
+                "username": "john_doe",
+                "password": "my_password",
+            },
+        },
+        "UserOut": {
+            "type": "object",
+            "discriminator": "userInType",
+            "properties": {
+                "id": {"type": "number"},
+                "username": {"type": "string"},
+            },
+            "example": {
+                "id": 0,
+                "username": "john_doe",
+            },
+        },
+        "TokenOut": {
+            "type": "object",
+            "discriminator": "tokenOutType",
+            "properties": {
+                "access_token": {"type": "string"},
+            },
+        },
+        "Unauthorized": {
+            "type": "object",
+            "discriminator": "unauthorizedType",
+            "properties": {"error": {"type": "string"}},
+            "example": {"error": "У вас немає доступу"},
+        },
         "NotFound": {
             "type": "object",
             "discriminator": "notFoundType",
