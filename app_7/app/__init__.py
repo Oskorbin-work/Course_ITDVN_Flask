@@ -52,6 +52,6 @@ def create_app():
 
     @app.errorhandler(404)
     def handle_404(e):
-        return str(e), 404
+        return jsonify(error="Ми не змогли знайти це :("),404
 
     return app
