@@ -8,7 +8,7 @@ executor = ThreadPoolExecutor(max_workers=2)
 
 async def long_running_task():
     await asyncio.sleep(5)
-    return "Long task finished"
+    return "Long task finished!"
 
 
 @app.route("/<int:id>")
